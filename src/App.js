@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { Button, FormControl, InputLabel, Input } from '@material-ui/core';
+import { FormControl, Input } from '@material-ui/core';
 import Message from './Message';
 import db from './firebase';
 import firebase from 'firebase';
@@ -39,7 +39,10 @@ function App() {
   };
   return (
     <div className='App'>
-      <img src='https://img.icons8.com/cute-clipart/50/000000/chat.png' />
+      <img
+        src='https://img.icons8.com/cute-clipart/50/000000/chat.png'
+        alt='Logo'
+      />
       <h1>Guys, Just Say Hello! </h1>
       <h2>welcome {username}</h2>
 
