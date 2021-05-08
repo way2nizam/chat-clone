@@ -40,6 +40,7 @@ function App() {
   return (
     <div className='App'>
       <img
+        class='app__img'
         src='https://img.icons8.com/cute-clipart/50/000000/chat.png'
         alt='Logo'
       />
