@@ -1,132 +1,78 @@
-import React, { useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
-
-firebase.initializeApp({
-  apiKey: 'AIzaSyB0h04EeGzaymMVip6JvMgTzglAkbdkO8M',
-  authDomain: 'chat-app-2c10d.firebaseapp.com',
-  projectId: 'chat-app-2c10d',
-  storageBucket: 'chat-app-2c10d.appspot.com',
-  messagingSenderId: '363969664439',
-  appId: '1:363969664439:web:8c31acaa38015661f2c432',
-});
-
-const auth = firebase.auth();
-const firestore = firebase.firestore();
+import { FormControl, Input } from '@material-ui/core';
+import Message from './Message';
+import db from './firebase';
+import firebase from 'firebase';
+import FlipMove from 'react-flip-move';
+import SendIcon from '@material-ui/icons/Send';
+import { IconButton } from '@material-ui/core';
 
 function App() {
-  const [user] = useAuthState(auth);
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [username, setUsername] = useState('');
 
+  useEffect(() => {
+    db.collection('messages')
+      .orderBy('timeStamp', 'desc')
+      .onSnapshot((snapshot) => {
+        setMessages(
+          snapshot.docs.map((doc) => ({ id: doc.id, message: doc.data() }))
+        );
+      });
+  }, []);
+
+  useEffect(() => {
+    setUsername(prompt('Please enter your name'));
+  }, []);
+
+  const sendMessage = (event) => {
+    event.preventDefault();
+
+    db.collection('messages').add({
+      message: input,
+      username: username,
+      timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    setInput('');
+  };
   return (
     <div className='App'>
-      <header>
-        <h1>Chat App</h1>
-        <SignOut />
-      </header>
+      <img
+        class='app__img'
+        src='https://img.icons8.com/cute-clipart/50/000000/chat.png'
+        alt='Logo'
+      />
+      <h1>Guys, Just Say Hello! </h1>
+      <h2>welcome {username}</h2>
 
-      <section>{user ? <ChatRoom /> : <SignIn />}</section>
-    </div>
-  );
-}
-
-function SignIn() {
-  const signInWithGoogle = () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider);
-  };
-
-  return (
-    <>
-      <button className='sign-in' onClick={signInWithGoogle}>
-        Sign in with Google
-      </button>
-      <p>
-        Do not violate the community guidelines or you will be banned for life!
-      </p>
-    </>
-  );
-}
-
-function SignOut() {
-  return (
-    auth.currentUser && (
-      <button className='sign-out' onClick={() => auth.signOut()}>
-        Sign Out
-      </button>
-    )
-  );
-}
-
-function ChatRoom() {
-  const dummy = useRef();
-  const messagesRef = firestore.collection('messages');
-  const query = messagesRef.orderBy('createdAt').limit(25);
-
-  const [messages] = useCollectionData(query, { idField: 'id' });
-
-  const [formValue, setFormValue] = useState('');
-
-  const sendMessage = async (e) => {
-    e.preventDefault();
-
-    const { uid, photoURL } = auth.currentUser;
-
-    await messagesRef.add({
-      text: formValue,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      uid,
-      photoURL,
-    });
-
-    setFormValue('');
-    dummy.current.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  return (
-    <>
-      <main>
-        {messages &&
-          messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
-
-        <span ref={dummy}></span>
-      </main>
-
-      <form onSubmit={sendMessage}>
-        <input
-          value={formValue}
-          onChange={(e) => setFormValue(e.target.value)}
-          placeholder='Enter your message'
-        />
-
-        <button type='submit' disabled={!formValue}>
-          submit
-        </button>
+      <form className='app__form'>
+        <FormControl class='app__formControl'>
+          <Input
+            class='app__input'
+            placeholder='Enter a message ...'
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+          />
+          <IconButton
+            className='app__iconButton'
+            disabled={!input}
+            variant='contained'
+            color='primary'
+            type='submit'
+            onClick={sendMessage}>
+            <SendIcon />
+          </IconButton>
+        </FormControl>
       </form>
-    </>
-  );
-}
 
-function ChatMessage(props) {
-  const { text, uid, photoURL } = props.message;
-
-  const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received';
-
-  return (
-    <>
-      <div className={`message ${messageClass}`}>
-        <img
-          src={
-            photoURL || 'https://api.adorable.io/avatars/23/abott@adorable.png'
-          }
-          alt='img'
-        />
-        <p>{text}</p>
-      </div>
-    </>
+      <FlipMove>
+        {messages.map(({ id, message }) => (
+          <Message key={id} username={username} message={message} />
+        ))}
+      </FlipMove>
+    </div>
   );
 }
 
