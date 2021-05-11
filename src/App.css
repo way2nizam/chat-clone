@@ -1,35 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
-
-body {
-  font-family: 'Roboto', sans-serif;
-}
-.App {
-  text-align: center;
+.app {
+  display: grid;
+  place-items: center;
+  background-color: #dadbd3;
+  height: 100vh;
 }
 
-.app__form {
-  padding: 20px;
-  position: fixed;
-  bottom: 0;
-  z-index: 1;
-  background-color: #e9e9eb;
-  width: 90%;
-  margin: 20px;
-}
-
-.app__formControl {
-  display: flex !important;
-  flex-direction: row !important;
-}
-
-.app__input {
-  flex: 1;
-}
-
-.app__iconButton {
-  flex: 0;
-}
-
-.app__img {
-  margin-top: 10px;
+.app__body {
+  display: flex;
+  background-color: #ededed;
+  margin-top: -30px;
+  height: 90vh;
+  width: 90vw;
+  box-shadow: -1px 4px 20px -6px rgba(0, 0, 0, 0.5);
 }
