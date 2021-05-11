@@ -1,5 +1,5 @@
 import Chat from './Chat';
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
 import Sidebar from './Sidebar';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
