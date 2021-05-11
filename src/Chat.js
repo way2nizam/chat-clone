@@ -41,7 +41,6 @@ function Chat() {
 
   const sendMessage = (e) => {
     e.preventDefault();
-    console.log('You type >>>', input);
 
     db.collection('rooms').doc(roomId).collection('messages').add({
       message: input,
@@ -57,12 +56,18 @@ function Chat() {
         <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
         <div className='chat__headerInfo'>
           <h3>{roomName}</h3>
-          <p>
-            last seen at
-            {new Date(
-              messages[messages.length - 1]?.timestamp?.toDate()
-            ).toUTCString()}
-          </p>
+          {!roomName ? (
+            <p> </p>
+          ) : (
+            <>
+              <p>
+                last seen at{' '}
+                {new Date(
+                  messages[messages.length - 1]?.timestamp?.toDate()
+                ).toUTCString()}
+              </p>
+            </>
+          )}
         </div>
         <div className='chat__headerRight'>
           <IconButton>
@@ -76,6 +81,7 @@ function Chat() {
           </IconButton>
         </div>
       </div>
+
       <div className='chat__body'>
         {messages.map((message) => (
           <p

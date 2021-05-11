@@ -27,7 +27,7 @@ function Login() {
           alt='logo'></img>
 
         <div className='login__text'>
-          <h1>sign into whatsapp</h1>
+          <h1>WhatsApp Chat Clone</h1>
         </div>
 
         <Button onClick={signIn}>Sign In With Google</Button>
